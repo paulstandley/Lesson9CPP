@@ -10,19 +10,58 @@ private:
     double m_y{};
     double m_z{};
 
-    public Point1(double x = 0, double y = 0, double z = 0) : m_x{ x }, m_y{ y }, m_z{ z } {}
-
-    friend std::ostream& operator<< (std::ostream& out, const Point1 point);
-    std::ostream& operator<<(std::ostream& out, const Point1& point)
+public:
+    Point1(double x = 0.0, double y = 0.0, double z = 0.0)
+        : m_x{ x }, m_y{ y }, m_z{ z }
     {
-        // Since operator<< is a friend of the Point class, 
-        //we can access Point's members directly.
-        out << "Point(" << point.m_x << ", " << point.m_y << ", " << point.m_z << ')';
-        // actual output done here
-
-        return out; // return std::ostream so we can chain calls to operator<<
     }
+
+    friend std::ostream& operator<< (std::ostream& out, const Point1& point);
 };
+
+std::ostream& operator<< (std::ostream& out, const Point1& point)
+{
+    // Since operator<< is a friend of the Point class, we can access Point's members directly.
+    out << "Point(" << point.m_x << ", " << point.m_y << ", " << point.m_z << ')'; // actual output done here
+
+    return out; // return std::ostream so we can chain calls to operator<<
+}
+
+class Point2
+{
+private:
+    double m_x{};
+    double m_y{};
+    double m_z{};
+
+public:
+    Point2(double x = 0.0, double y = 0.0, double z = 0.0)
+        : m_x{ x }, m_y{ y }, m_z{ z }
+    {
+    }
+
+    friend std::ostream& operator<< (std::ostream& out, const Point2& point);
+    friend std::istream& operator>> (std::istream& in, Point2& point);
+};
+
+std::ostream& operator<< (std::ostream& out, const Point2& point)
+{
+    // Since operator<< is a friend of the Point class, we can access Point's members directly.
+    out << "Point(" << point.m_x << ", " << point.m_y << ", " << point.m_z << ')';
+
+    return out;
+}
+
+std::istream& operator>> (std::istream& in, Point2& point)
+{
+    // Since operator>> is a friend of the Point class, we can access Point's members directly.
+    // note that parameter point must be non-const so we can modify the class members with the input values
+    in >> point.m_x;
+    in >> point.m_y;
+    in >> point.m_z;
+
+    return in;
+}
 
 void overloading_the_IO_operators()
 {
@@ -95,18 +134,37 @@ void overloading_the_IO_operators()
     Therefore, we don’t have to worry about referencing something that will
     go out of scope and get destroyed when the operator returns.
 
+    //////////////////////////////////////////////////////////////////////////////////
+
+    Overloading operator>>
+
+    It is also possible to overload the input operator. 
+    This is done in a manner analogous to overloading the output operator. 
+    The key thing you need to know is that std::cin is an object of type std::istream. 
+
+    Conclusion
+
+    Overloading operator<< and operator>> make it extremely easy to output your class
+    to screen and accept user input from the console.
     
     */
 
     const Point1 point11{ 2.0, 3.0, 4.0 };
 
     std::cout << point11 << '\n';
+
+    std::cout << "Enter a point: \n";
+
+    Point2 point2{};
+    std::cin >> point2;
+
+    std::cout << "You entered: " << point2 << '\n';
 }
 
 int main()
 {
     //overloading_operators_using_normal_functions();
-
+    overloading_the_IO_operators();
     return 0;
 }
 
